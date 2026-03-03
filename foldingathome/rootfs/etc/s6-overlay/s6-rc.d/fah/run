@@ -49,8 +49,15 @@ if [[ -n "${ACCOUNT_TOKEN}" ]]; then
   {
     echo "<config>"
     echo "  <account-token v=\"$(xml_escape "${ACCOUNT_TOKEN}")\"/>"
-    echo "  <machine-name v=\"$(xml_escape "${MACHINE_NAME}")\"/>"
+    if [[ -n "${MACHINE_NAME}" ]]; then
+      echo "  <machine-name v=\"$(xml_escape "${MACHINE_NAME}")\"/>"
+    fi
     echo "</config>"
+  } > "${CONFIG_FILE}"
+  chmod 600 "${CONFIG_FILE}"
+else
+  rm -f "${CONFIG_FILE}"
+fi
   } > "${CONFIG_FILE}"
   chmod 600 "${CONFIG_FILE}"
 else
