@@ -32,16 +32,29 @@ cd /data || bashio::exit.nok "Failed to change to working directory"
 
 CONFIG_FILE="/data/config.xml"
 
+xml_escape() {
+  local value="$1"
+  value=${value//&/&amp;}
+  value=${value//</&lt;}
+  value=${value//>/&gt;}
+  value=${value//\"/&quot;}
+  value=${value//\'/&apos;}
+  printf '%s' "${value}"
+}
+
 # Only write config.xml when linking to an account (v8-5 web control machine linking).
 # For anonymous/default runs, do not force a config.xml (v8.5.5 does not support fold-anon here).
 if [[ -n "${ACCOUNT_TOKEN}" ]]; then
   bashio::log.info "Writing ${CONFIG_FILE} (account linked)"
   {
     echo "<config>"
-    echo "  <account-token v=\"${ACCOUNT_TOKEN}\"/>"
-    echo "  <machine-name v=\"${MACHINE_NAME}\"/>"
+    echo "  <account-token v=\"$(xml_escape "${ACCOUNT_TOKEN}")\"/>"
+    echo "  <machine-name v=\"$(xml_escape "${MACHINE_NAME}")\"/>"
     echo "</config>"
   } > "${CONFIG_FILE}"
+  chmod 600 "${CONFIG_FILE}"
+else
+  rm -f "${CONFIG_FILE}"
 fi
 
 # Log args, but redact passkey to avoid leaking secrets into add-on logs
