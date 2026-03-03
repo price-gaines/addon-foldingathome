@@ -9,6 +9,9 @@ declare -a options
 
 bashio::log.info 'Starting Folding@home...'
 
+ACCOUNT_TOKEN="$(bashio::config 'account_token')"
+MACHINE_NAME="$(bashio::config 'machine_name')"
+
 options+=(--http-addresses 0.0.0.0:7396)
 options+=(--command-address 0.0.0.0)
 options+=(--command-port 36330)
@@ -21,4 +24,36 @@ options+=(--team 247478)
 options+=(--power full)
 
 cd /data || bashio::exit.nok "Failed to change to working directory"
+
+# If an account token is provided, ensure /data/config.xml contains it so the node appears in v8-5 web control
+if [[ -n "${ACCOUNT_TOKEN}" ]]; then
+  CONFIG_FILE="/data/config.xml"
+
+  if [[ ! -f "${CONFIG_FILE}" ]] || ! grep -q "</config>" "${CONFIG_FILE}"; then
+    bashio::log.info "Creating ${CONFIG_FILE} with account-token and machine-name"
+    cat > "${CONFIG_FILE}" <<EOF
+<config>
+  <account-token v="${ACCOUNT_TOKEN}"/>
+  <machine-name v="${MACHINE_NAME}"/>
+</config>
+EOF
+  else
+    bashio::log.info "Updating ${CONFIG_FILE} with account-token and machine-name"
+
+    tmpfile="$(mktemp)"
+    grep -v -E "<account-token |<machine-name " "${CONFIG_FILE}" > "${tmpfile}" || true
+
+    awk -v token="${ACCOUNT_TOKEN}" -v name="${MACHINE_NAME}" '
+      /<\/config>/ && !inserted {
+        print "  <account-token v=\"" token "\"/>";
+        print "  <machine-name v=\"" name "\"/>";
+        inserted=1;
+      }
+      { print }
+    ' "${tmpfile}" > "${CONFIG_FILE}"
+
+    rm -f "${tmpfile}"
+  fi
+fi
+
 exec FAHClient "${options[@]}"

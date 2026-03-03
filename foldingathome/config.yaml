@@ -17,3 +17,13 @@ ports:
 ports_description:
   7396/tcp: Web interface
   36330/tcp: Remote command interface
+
+options:
+  log_level: info
+  account_token: ""
+  machine_name: "homeassistant"
+
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?
+  account_token: str?
+  machine_name: str?
