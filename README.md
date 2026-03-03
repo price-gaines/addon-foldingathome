@@ -21,6 +21,13 @@ Fighting disease with a world wide distributed super computer.
 
 ![Folding@home in the Home Assistant Frontend](images/screenshot.png)
 
+## Configuration highlights
+
+- The add-on runs the Folding@home v8 client and exposes the local Web UI on port **7396**.
+- Defaults contribute to the **Home Assistant Folding@home team (247478)** using `Anonymous`.
+- Optional: set `user`, `team`, and `passkey` to receive credit under your own donor identity.
+- Optional: set `account_token` (and `machine_name`) to link the node to your Folding@home account for the v8-5 Web Control machine list.
+
 ## About
 
 Folding@home (FAH or F@h) is a distributed computing project for performing

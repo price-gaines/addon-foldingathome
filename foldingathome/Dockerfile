@@ -8,21 +8,24 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Setup base system
 ARG BUILD_ARCH=amd64
 RUN \
-    curl -J -L -o /tmp/fah.deb \
-        "https://download.foldingathome.org/releases/public/fah-client/debian-10-64bit/release/fah-client_8.3.17_amd64.deb" \
-    \
-    && apt-get update \
+    apt-get update \
     && apt-get install -y --no-install-recommends \
-        bzip2=1.0.8-5+b1 \
-        ocl-icd-libopencl1=2.3.1-1 \
+        ca-certificates \
+        curl \
+        bzip2 \
+        ocl-icd-libopencl1 \
+    \
+    && curl -fSL -o /tmp/fah.deb \
+        "https://download.foldingathome.org/releases/public/fah-client/debian-10-64bit/release/fah-client_8.5.5_amd64.deb" \
     \
     && addgroup --system render \
-    && mkdir /etc/fahclient \
+    && mkdir -p /etc/fahclient \
     && touch /etc/fahclient/config.xml \
-    && dpkg --install /tmp/fah.deb \
+    && apt-get install -y --no-install-recommends /tmp/fah.deb \
+    && dpkg -s fah-client | grep -q "^Version: 8.5.5" \
+    && ln -sf /usr/bin/fah-client /usr/bin/FAHClient \
     \
     && rm -fr \
-        /etc/fahclient \
         /tmp/* \
         /var/{cache,log}/* \
         /var/lib/apt/lists/*
@@ -34,6 +37,9 @@ COPY rootfs /
 ARG BUILD_DATE
 ARG BUILD_REF
 ARG BUILD_VERSION
+ARG BUILD_NAME="Folding@home"
+ARG BUILD_DESCRIPTION="Fighting disease with a world wide distributed super computer"
+ARG BUILD_REPOSITORY="hassio-addons/addon-foldingathome"
 
 # Labels
 LABEL \
@@ -41,7 +47,7 @@ LABEL \
     io.hass.description="${BUILD_DESCRIPTION}" \
     io.hass.arch="${BUILD_ARCH}" \
     io.hass.type="addon" \
-    io.hass.version=${BUILD_VERSION} \
+    io.hass.version="${BUILD_VERSION}" \
     maintainer="Franck Nijhof <frenck@addons.community>" \
     org.opencontainers.image.title="${BUILD_NAME}" \
     org.opencontainers.image.description="${BUILD_DESCRIPTION}" \
@@ -51,6 +57,6 @@ LABEL \
     org.opencontainers.image.url="https://addons.community" \
     org.opencontainers.image.source="https://github.com/${BUILD_REPOSITORY}" \
     org.opencontainers.image.documentation="https://github.com/${BUILD_REPOSITORY}/blob/main/README.md" \
-    org.opencontainers.image.created=${BUILD_DATE} \
-    org.opencontainers.image.revision=${BUILD_REF} \
-    org.opencontainers.image.version=${BUILD_VERSION}
+    org.opencontainers.image.created="${BUILD_DATE}" \
+    org.opencontainers.image.revision="${BUILD_REF}" \
+    org.opencontainers.image.version="${BUILD_VERSION}"

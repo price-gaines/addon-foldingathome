@@ -12,48 +12,56 @@ bashio::log.info 'Starting Folding@home...'
 ACCOUNT_TOKEN="$(bashio::config 'account_token')"
 MACHINE_NAME="$(bashio::config 'machine_name')"
 
+FAH_USER="$(bashio::config 'user')"
+FAH_TEAM="$(bashio::config 'team')"
+FAH_PASSKEY="$(bashio::config 'passkey')"
+
 options+=(--http-addresses 0.0.0.0:7396)
-options+=(--command-address 0.0.0.0)
-options+=(--command-port 36330)
-options+=(--command-allow-no-pass 0/0)
 options+=(--allow 0/0)
-options+=(--web-allow 0/0)
-options+=(--smp=true)
-options+=(--user "Anonymous")
-options+=(--team 247478)
-options+=(--power full)
+
+options+=(--user "${FAH_USER}")
+options+=(--team "${FAH_TEAM}")
+
+# Passkey is optional
+if [[ -n "${FAH_PASSKEY}" ]]; then
+  options+=(--passkey "${FAH_PASSKEY}")
+fi
+
 
 cd /data || bashio::exit.nok "Failed to change to working directory"
 
-# If an account token is provided, ensure /data/config.xml contains it so the node appears in v8-5 web control
+CONFIG_FILE="/data/config.xml"
+
+# Only write config.xml when linking to an account (v8-5 web control machine linking).
+# For anonymous/default runs, do not force a config.xml (v8.5.5 does not support fold-anon here).
 if [[ -n "${ACCOUNT_TOKEN}" ]]; then
-  CONFIG_FILE="/data/config.xml"
-
-  if [[ ! -f "${CONFIG_FILE}" ]] || ! grep -q "</config>" "${CONFIG_FILE}"; then
-    bashio::log.info "Creating ${CONFIG_FILE} with account-token and machine-name"
-    cat > "${CONFIG_FILE}" <<EOF
-<config>
-  <account-token v="${ACCOUNT_TOKEN}"/>
-  <machine-name v="${MACHINE_NAME}"/>
-</config>
-EOF
-  else
-    bashio::log.info "Updating ${CONFIG_FILE} with account-token and machine-name"
-
-    tmpfile="$(mktemp)"
-    grep -v -E "<account-token |<machine-name " "${CONFIG_FILE}" > "${tmpfile}" || true
-
-    awk -v token="${ACCOUNT_TOKEN}" -v name="${MACHINE_NAME}" '
-      /<\/config>/ && !inserted {
-        print "  <account-token v=\"" token "\"/>";
-        print "  <machine-name v=\"" name "\"/>";
-        inserted=1;
-      }
-      { print }
-    ' "${tmpfile}" > "${CONFIG_FILE}"
-
-    rm -f "${tmpfile}"
-  fi
+  bashio::log.info "Writing ${CONFIG_FILE} (account linked)"
+  {
+    echo "<config>"
+    echo "  <account-token v=\"${ACCOUNT_TOKEN}\"/>"
+    echo "  <machine-name v=\"${MACHINE_NAME}\"/>"
+    echo "</config>"
+  } > "${CONFIG_FILE}"
 fi
 
-exec FAHClient "${options[@]}"
+# Log args, but redact passkey to avoid leaking secrets into add-on logs
+log_args=()
+skip_next=false
+for arg in "${options[@]}"; do
+  if ${skip_next}; then
+    log_args+=("********")
+    skip_next=false
+    continue
+  fi
+
+  if [[ "${arg}" == "--passkey" ]]; then
+    log_args+=("--passkey")
+    skip_next=true
+    continue
+  fi
+
+  log_args+=("${arg}")
+done
+
+bashio::log.info "FAHClient args: ${log_args[*]}"
+exec /usr/bin/FAHClient "${options[@]}"
