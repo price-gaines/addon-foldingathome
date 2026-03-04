@@ -58,7 +58,6 @@ if [[ -n "${ACCOUNT_TOKEN}" ]]; then
 else
   rm -f "${CONFIG_FILE}"
 fi
-fi
 
 # Log args, but redact passkey to avoid leaking secrets into add-on logs
 log_args=()
