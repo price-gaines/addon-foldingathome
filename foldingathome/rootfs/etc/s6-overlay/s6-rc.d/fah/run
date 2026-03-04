@@ -58,10 +58,6 @@ if [[ -n "${ACCOUNT_TOKEN}" ]]; then
 else
   rm -f "${CONFIG_FILE}"
 fi
-  } > "${CONFIG_FILE}"
-  chmod 600 "${CONFIG_FILE}"
-else
-  rm -f "${CONFIG_FILE}"
 fi
 
 # Log args, but redact passkey to avoid leaking secrets into add-on logs
