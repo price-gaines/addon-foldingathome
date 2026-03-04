@@ -17,7 +17,7 @@ ports_description:
 
 options:
   log_level: info
-  user: "Anonymous"
+  user: ""
   team: 247478
   passkey: ""
   account_token: ""
@@ -25,8 +25,8 @@ options:
 
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
-  user: str?
-  team: int?
-  passkey: str?
-  account_token: str?
-  machine_name: str?
+  user: match(^.+$)
+  team: int(1,)
+  passkey: match(^.+$)
+  account_token: match(^.+$)
+  machine_name: match(^.+$)

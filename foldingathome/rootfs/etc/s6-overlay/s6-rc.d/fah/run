@@ -16,6 +16,35 @@ FAH_USER="$(bashio::config 'user')"
 FAH_TEAM="$(bashio::config 'team')"
 FAH_PASSKEY="$(bashio::config 'passkey')"
 
+# Required-field guard: do not start unless all required fields are provided
+missing=()
+
+if [[ -z "${FAH_USER}" ]]; then
+  missing+=("user")
+fi
+
+if [[ -z "${FAH_PASSKEY}" ]]; then
+  missing+=("passkey")
+fi
+
+if [[ -z "${ACCOUNT_TOKEN}" ]]; then
+  missing+=("account_token")
+fi
+
+if [[ -z "${MACHINE_NAME}" ]]; then
+  missing+=("machine_name")
+fi
+
+if [[ -z "${FAH_TEAM}" ]]; then
+  missing+=("team")
+fi
+
+if (( ${#missing[@]} > 0 )); then
+  bashio::log.error "Missing required configuration value(s): ${missing[*]}"
+  bashio::log.error "Fill in all required fields in the add-on Configuration tab, save, then start the add-on again."
+  bashio::exit.nok
+fi
+
 options+=(--http-addresses 0.0.0.0:7396)
 options+=(--allow 0/0)
 

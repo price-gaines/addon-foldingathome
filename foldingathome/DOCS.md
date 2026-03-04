@@ -30,18 +30,28 @@ comparison to installing any other Home Assistant add-on.
 1. Check the logs of the "Folding@home" to see if everything went well.
 1. Open the Web UI.
 
-**Note**: By default, the add-on joins the Home Assistant team (id: 247478).
+**Note**: The previous official release of this add-on would start folding immediately on first start using the username `Anonymous` and the Home Assistant team number (id: 247478).
+
+This updated version does not support that anonymous auto-start behavior. To reliably start folding, you must provide all required configuration fields (see below). The team number can remain auto-filled for convenience.
 
 Team stats: <https://stats.foldingathome.org/team/247478>
 
 ## Configuration
 
+
 **Note**: _Remember to restart the add-on when the configuration is changed._
+
+All of the options below are required for this updated v8.5.5 build to reliably start folding and be controllable via Web Control.
 
 Example add-on configuration:
 
 ```yaml
 log_level: info
+user: "your_username"
+team: 247478
+passkey: "your_passkey"
+account_token: "your_account_token"
+machine_name: "your_machine_name"
 ```
 
 ### Option: `log_level`
@@ -62,22 +72,33 @@ more severe level, e.g., `debug` also shows `info` messages. By default,
 the `log_level` is set to `info`, which is the recommended setting unless
 you are troubleshooting.
 
+### Option: `user`
+
+Folding@home donor username (for credit/stats).
+
+### Option: `team`
+
+Folding@home team number (for credit/stats).
+
+### Option: `passkey`
+
+Folding@home passkey for your donor identity.
+
+### Option: `account_token`
+
+Folding@home Account Token used to link this node for v8.5 Web Control.
+
+### Option: `machine_name`
+
+Machine name shown for this node in Folding@home Web Control.
+
 ## Embedding into Home Assistant
 
-It is possible to embed the Folding@home interface directly into Home Assistant,
-allowing you to access it through the Home Assistant frontend.
+Previous versions of this add-on exposed an older local Web Control that could be embedded in Home Assistant using the `panel_iframe` integration.
 
-Home Assistant provides the `panel_iframe` integration, for these purposes.
+With the current v8.5.5 account-based Web Control, embedding is no longer recommended. In testing, Home Assistant's iframe integration does not provide a reliable login/control workflow for Folding@home Web Control. The login flow is designed for direct browser interaction and account-based session handling, which does not behave reliably when loaded inside an embedded iframe.
 
-Example configuration:
-
-```yaml
-panel_iframe:
-  foldingathome:
-    title: Folding@home
-    icon: mdi:bacteria-outline
-    url: http://addres.to.your.hass.io:7396
-```
+For that reason, this add-on should be accessed directly through its Web UI rather than embedded into the Home Assistant frontend.
 
 ## Known issues and limitations
 
