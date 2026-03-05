@@ -32,7 +32,7 @@ comparison to installing any other Home Assistant add-on.
 
 **Note**: The previous official release of this add-on would start folding immediately on first start using the username `Anonymous` and the Home Assistant team number (id: 247478).
 
-This updated version does not support that anonymous auto-start behavior. To reliably start folding, you must provide all required configuration fields (see below). The team number can remain auto-filled for convenience.
+This updated version does not support that anonymous auto-start behavior. To reliably start folding, you must provide your **Username**, **Passkey**, and **Account Token** in the add-on configuration (see below). The **Team** and **Machine Name** fields can remain at their defaults or be customized if you prefer.
 
 Team stats: <https://stats.foldingathome.org/team/247478>
 
@@ -41,7 +41,7 @@ Team stats: <https://stats.foldingathome.org/team/247478>
 
 **Note**: _Remember to restart the add-on when the configuration is changed._
 
-The identity/linking options below (`user`, `team`, `passkey`, `account_token`, `machine_name`) are required for this updated v8.5.5 build to reliably start folding and be controllable via Web Control.
+For this updated v8.5.5 build, you must provide your `user`, `passkey`, and `account_token` values for the add-on to reliably start folding and be controllable via Web Control. The `team` and `machine_name` options have valid defaults and may be left as-is or customized.
 
 Example add-on configuration:
 
@@ -78,7 +78,7 @@ Folding@home donor username (for credit/stats).
 
 ### Option: `team`
 
-Folding@home team number (for credit/stats).
+Folding@home team number (for credit/stats). This field has a valid default and may be left as-is or customized.
 
 ### Option: `passkey`
 
@@ -90,7 +90,7 @@ Folding@home Account Token used to link this node for v8.5 Web Control.
 
 ### Option: `machine_name`
 
-Machine name shown for this node in Folding@home Web Control.
+Machine name shown for this node in Folding@home Web Control. This field has a valid default and may be left as-is or customized.
 
 ## Embedding into Home Assistant
 
