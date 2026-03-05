@@ -7,7 +7,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Setup base system
 ARG BUILD_ARCH=amd64
-ARG FAH_CLIENT_SHA256=""
+ARG FAH_CLIENT_SHA256="4f9c8bed9b2893752afb87e2796512ca0ca300ffc3d6035c518d56360370886c"
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -19,11 +19,7 @@ RUN \
     \
     && curl -fSL -o /tmp/fah.deb \
         "https://download.foldingathome.org/releases/public/fah-client/debian-10-64bit/release/fah-client_8.5.5_amd64.deb" \
-    && if [[ -n "${FAH_CLIENT_SHA256}" ]]; then \
-         echo "${FAH_CLIENT_SHA256}  /tmp/fah.deb" | sha256sum -c -; \
-       else \
-         echo "WARNING: FAH_CLIENT_SHA256 not set; skipping checksum verification" >&2; \
-       fi \
+    && echo "${FAH_CLIENT_SHA256}  /tmp/fah.deb" | sha256sum -c - \
     \
     && addgroup --system render \
     && mkdir -p /etc/fahclient \
