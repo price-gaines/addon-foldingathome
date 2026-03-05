@@ -70,13 +70,33 @@ xml_escape() {
 
 # Write config.xml for account linking.
 bashio::log.info "Writing ${CONFIG_FILE} (account linked)"
+tmp_config="$(mktemp /data/config.xml.XXXXXX)" || {
+  bashio::log.error "Failed to create temporary config file"
+  bashio::exit.nok
+}
+
 {
   echo "<config>"
   echo "  <account-token v=\"$(xml_escape "${ACCOUNT_TOKEN}")\"/>"
   echo "  <machine-name v=\"$(xml_escape "${MACHINE_NAME}")\"/>"
   echo "</config>"
-} > "${CONFIG_FILE}"
-chmod 600 "${CONFIG_FILE}"
+} > "${tmp_config}" || {
+  bashio::log.error "Failed to write temporary config file: ${tmp_config}"
+  rm -f "${tmp_config}"
+  bashio::exit.nok
+}
+
+chmod 600 "${tmp_config}" || {
+  bashio::log.error "Failed to set permissions on temporary config file: ${tmp_config}"
+  rm -f "${tmp_config}"
+  bashio::exit.nok
+}
+
+mv -f "${tmp_config}" "${CONFIG_FILE}" || {
+  bashio::log.error "Failed to replace ${CONFIG_FILE}"
+  rm -f "${tmp_config}"
+  bashio::exit.nok
+}
 
 # Log args, but redact passkey to avoid leaking secrets into add-on logs
 log_args=()
