@@ -16,7 +16,7 @@ FAH_USER="$(bashio::config 'user')"
 FAH_TEAM="$(bashio::config 'team')"
 FAH_PASSKEY="$(bashio::config 'passkey')"
 
-# Required-field guard: do not start unless all required fields are provided
+# Required-field guard: this build will not start unless all required fields are provided.
 missing=()
 
 if [[ -z "${FAH_USER}" ]]; then
@@ -51,10 +51,7 @@ options+=(--allow 0/0)
 options+=(--user "${FAH_USER}")
 options+=(--team "${FAH_TEAM}")
 
-# Passkey is optional
-if [[ -n "${FAH_PASSKEY}" ]]; then
-  options+=(--passkey "${FAH_PASSKEY}")
-fi
+options+=(--passkey "${FAH_PASSKEY}")
 
 
 cd /data || bashio::exit.nok "Failed to change to working directory"
@@ -71,22 +68,15 @@ xml_escape() {
   printf '%s' "${value}"
 }
 
-# Only write config.xml when linking to an account (v8-5 web control machine linking).
-# For anonymous/default runs, do not force a config.xml (v8.5.5 does not support fold-anon here).
-if [[ -n "${ACCOUNT_TOKEN}" ]]; then
-  bashio::log.info "Writing ${CONFIG_FILE} (account linked)"
-  {
-    echo "<config>"
-    echo "  <account-token v=\"$(xml_escape "${ACCOUNT_TOKEN}")\"/>"
-    if [[ -n "${MACHINE_NAME}" ]]; then
-      echo "  <machine-name v=\"$(xml_escape "${MACHINE_NAME}")\"/>"
-    fi
-    echo "</config>"
-  } > "${CONFIG_FILE}"
-  chmod 600 "${CONFIG_FILE}"
-else
-  rm -f "${CONFIG_FILE}"
-fi
+# Write config.xml for account linking.
+bashio::log.info "Writing ${CONFIG_FILE} (account linked)"
+{
+  echo "<config>"
+  echo "  <account-token v=\"$(xml_escape "${ACCOUNT_TOKEN}")\"/>"
+  echo "  <machine-name v=\"$(xml_escape "${MACHINE_NAME}")\"/>"
+  echo "</config>"
+} > "${CONFIG_FILE}"
+chmod 600 "${CONFIG_FILE}"
 
 # Log args, but redact passkey to avoid leaking secrets into add-on logs
 log_args=()

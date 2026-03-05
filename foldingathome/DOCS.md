@@ -41,7 +41,7 @@ Team stats: <https://stats.foldingathome.org/team/247478>
 
 **Note**: _Remember to restart the add-on when the configuration is changed._
 
-All of the options below are required for this updated v8.5.5 build to reliably start folding and be controllable via Web Control.
+The identity/linking options below (`user`, `team`, `passkey`, `account_token`, `machine_name`) are required for this updated v8.5.5 build to reliably start folding and be controllable via Web Control.
 
 Example add-on configuration:
 
