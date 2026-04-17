@@ -32,7 +32,7 @@ comparison to installing any other Home Assistant add-on.
 
 **Note**: The previous official release of this add-on would start folding immediately on first start using the username `Anonymous` and the Home Assistant team number (id: 247478).
 
-This updated version does not support that anonymous auto-start behavior. To reliably start folding, you must provide your **Username**, **Passkey**, and **Account Token** in the add-on configuration (see below). The **Team** and **Machine Name** fields can remain at their defaults or be customized if you prefer.
+This updated version does not support that anonymous auto-start behavior. To reliably start folding, you must provide your **Account Token** in the add-on configuration (see below). The **Team** and **Machine Name** fields can remain at their defaults or be customized if you prefer.
 
 Team stats: <https://stats.foldingathome.org/team/247478>
 
@@ -41,15 +41,13 @@ Team stats: <https://stats.foldingathome.org/team/247478>
 
 **Note**: _Remember to restart the add-on when the configuration is changed._
 
-For this updated v8.5.5 build, you must provide your `user`, `passkey`, and `account_token` values for the add-on to reliably start folding and be controllable via Web Control. The `team` and `machine_name` options have valid defaults and may be left as-is or customized.
+For this updated v8.5.5 build, you must provide your `account_token` for the add-on to reliably start folding and be controllable via Web Control. The `team` and `machine_name` options have valid defaults and may be left as-is or customized.
 
 Example add-on configuration:
 
 ```yaml
 log_level: info
-user: "your_username"
 team: 247478
-passkey: "your_passkey"
 account_token: "your_account_token"
 machine_name: "your_machine_name"
 ```
@@ -72,17 +70,9 @@ more severe level, e.g., `debug` also shows `info` messages. By default,
 the `log_level` is set to `info`, which is the recommended setting unless
 you are troubleshooting.
 
-### Option: `user`
-
-Folding@home donor username (for credit/stats).
-
 ### Option: `team`
 
 Folding@home team number (for credit/stats). This field has a valid default and may be left as-is or customized.
-
-### Option: `passkey`
-
-Folding@home passkey for your donor identity.
 
 ### Option: `account_token`
 

@@ -19,15 +19,14 @@
 
 Fighting disease with a world wide distributed super computer.
 
-![Folding@home in the Home Assistant Frontend](images/screenshot.png)
 
 ## Configuration highlights
 
 - The add-on runs the Folding@home v8 client and exposes the local Web UI on port **7396**.
 - The previous official release of this add-on would start folding immediately on first start using the username `Anonymous` and the Home Assistant team number (**247478**).
-- This updated version does not support that anonymous auto-start behavior. To save the add-on configuration and start the add-on, you must fill in `user`, `passkey`, and `account_token`. The `team` and `machine_name` fields may remain at their valid defaults or be customized if you prefer.
+- This updated version does not support that anonymous auto-start behavior. To save the add-on configuration and start the add-on, you must fill in `account_token`. The `team` and `machine_name` fields may remain at their valid defaults or be customized if you prefer.
 - The `team` field can remain auto-filled for convenience (Home Assistant team **247478**), and `machine_name` can remain at its default value, or either field can be customized if you prefer.
-- If any required field is left blank, the add-on configuration cannot be saved and the add-on will not start.
+- If `account_token` is left blank, the add-on configuration cannot be saved and the add-on will not start.
 
 ## About
 

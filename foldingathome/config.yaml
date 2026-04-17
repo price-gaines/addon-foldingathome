@@ -17,16 +17,12 @@ ports_description:
 
 options:
   log_level: info
-  user: ""
   team: 247478
-  passkey: ""
   account_token: ""
   machine_name: "homeassistant"
 
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
-  user: match(^.*\S.*$)
   team: int(1,)
-  passkey: match(^\S+$)
   account_token: match(^\S+$)
   machine_name: match(^.*\S.*$)

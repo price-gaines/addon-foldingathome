@@ -12,20 +12,10 @@ bashio::log.info 'Starting Folding@home...'
 ACCOUNT_TOKEN="$(bashio::config 'account_token')"
 MACHINE_NAME="$(bashio::config 'machine_name')"
 
-FAH_USER="$(bashio::config 'user')"
 FAH_TEAM="$(bashio::config 'team')"
-FAH_PASSKEY="$(bashio::config 'passkey')"
 
 # Required-field guard: this build will not start unless all required fields are provided.
 missing=()
-
-if [[ -z "${FAH_USER}" ]]; then
-  missing+=("user")
-fi
-
-if [[ -z "${FAH_PASSKEY}" ]]; then
-  missing+=("passkey")
-fi
 
 if [[ -z "${ACCOUNT_TOKEN}" ]]; then
   missing+=("account_token")
@@ -48,10 +38,7 @@ fi
 options+=(--http-addresses 0.0.0.0:7396)
 options+=(--allow 0/0)
 
-options+=(--user "${FAH_USER}")
 options+=(--team "${FAH_TEAM}")
-
-options+=(--passkey "${FAH_PASSKEY}")
 
 
 cd /data || bashio::exit.nok "Failed to change to working directory"
@@ -98,24 +85,5 @@ mv -f "${tmp_config}" "${CONFIG_FILE}" || {
   bashio::exit.nok
 }
 
-# Log args, but redact passkey to avoid leaking secrets into add-on logs
-log_args=()
-skip_next=false
-for arg in "${options[@]}"; do
-  if ${skip_next}; then
-    log_args+=("********")
-    skip_next=false
-    continue
-  fi
-
-  if [[ "${arg}" == "--passkey" ]]; then
-    log_args+=("--passkey")
-    skip_next=true
-    continue
-  fi
-
-  log_args+=("${arg}")
-done
-
-bashio::log.info "FAHClient args: ${log_args[*]}"
+bashio::log.info "FAHClient args: ${options[*]}"
 exec /usr/bin/FAHClient "${options[@]}"
